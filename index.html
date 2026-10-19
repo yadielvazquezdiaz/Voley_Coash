@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volleyball Academy - Aprende, Entrena y Juega</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        voley: {
+                            blue: '#03363d',
+                            accent: '#ff6b35',
+                            gold: '#f7c59f',
+                            bg: '#f8fafc',
+                            court: '#1e3a8a',
+                            courtLine: '#ffffff'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .active-tab {
+            border-bottom: 3px solid #ff6b35;
+            color: #ffffff;
+            font-weight: 700;
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        canvas {
+            touch-action: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans flex flex-col min-h-screen">
+
+    <!-- Header / Navbar -->
+    <header class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white shadow-lg sticky top-0 z-40 border-b border-indigo-800/40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Brand Logo -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('rules')">
+                    <div class="w-12 h-12 bg-gradient-to-tr from-amber-500 to-orange-500 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/20 transform hover:rotate-12 transition-all duration-300">
+                        <i class="fa-solid fa-volleyball text-white text-2xl animate-pulse"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-amber-200 bg-clip-text text-transparent">Volleyball<span class="text-amber-500">Academy</span></span>
+                        <span class="block text-[11px] font-medium text-indigo-300 tracking-wider uppercase">Plataforma Interactiva</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Desktop -->
+                <nav class="hidden md:flex space-x-1 lg:space-x-2 text-sm font-semibold">
+                    <button onclick="switchTab('rules')" id="nav-rules" class="nav-btn px-4 py-2 rounded-xl transition-all active-tab text-slate-200 hover:text-white hover:bg-white/10">
+                        <i class="fa-solid fa-book-bookmark mr-2 text-amber-400"></i>Reglas y Casos
+                    </button>
+                    <button onclick="switchTab('techniques')" id="nav-techniques" class="nav-btn px-4 py-2 rounded-xl transition-all text-slate-200 hover:text-white hover:bg-white/10">
+                        <i class="fa-solid fa-person-running mr-2 text-amber-400"></i>Técnicas
+                    </button>
+                    <button onclick="switchTab('game')" id="nav-game" class="nav-btn px-4 py-2 rounded-xl transition-all text-slate-200 hover:text-white hover:bg-white/10">
+                        <i class="fa-solid fa-gamepad mr-2 text-amber-400"></i>Cancha 1v1
+                    </button>
+                    <button onclick="switchTab('quiz')" id="nav-quiz" class="nav-btn px-4 py-2 rounded-xl transition-all text-slate-200 hover:text-white hover:bg-white/10">
+                        <i class="fa-solid fa-circle-question mr-2 text-amber-400"></i>Quiz Trivia
+                    </button>
+                </nav>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="text-slate-300 hover:text-white focus:outline-none p-2 rounded-lg bg-white/5">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-slate-900/95 border-b border-indigo-900/50 backdrop-blur-md px-4 pt-2 pb-4 space-y-2">
+            <button onclick="switchTab('rules'); toggleMobileMenu()" class="w-full text-left px-4 py-3 rounded-xl font-medium text-slate-200 hover:bg-indigo-900/40 flex items-center">
+                <i class="fa-solid fa-book-bookmark w-8 text-amber-400"></i> Reglas y Casos Prácticos
+            </button>
+            <button onclick="switchTab('techniques'); toggleMobileMenu()" class="w-full text-left px-4 py-3 rounded-xl font-medium text-slate-200 hover:bg-indigo-900/40 flex items-center">
+                <i class="fa-solid fa-person-running w-8 text-amber-400"></i> Guía de Técnicas
+            </button>
+            <button onclick="switchTab('game'); toggleMobileMenu()" class="w-full text-left px-4 py-3 rounded-xl font-medium text-slate-200 hover:bg-indigo-900/40 flex items-center">
+                <i class="fa-solid fa-gamepad w-8 text-amber-400"></i> Mini Juego 1v1 (IA)
+            </button>
+            <button onclick="switchTab('quiz'); toggleMobileMenu()" class="w-full text-left px-4 py-3 rounded-xl font-medium text-slate-200 hover:bg-indigo-900/40 flex items-center">
+                <i class="fa-solid fa-circle-question w-8 text-amber-400"></i> Quiz Interactivo
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Banner -->
+    <div class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 text-white py-10 px-4 sm:px-6 lg:px-8 border-b border-indigo-700/30">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="space-y-3 text-center md:text-left max-w-2xl">
+                <span class="inline-block bg-amber-500/20 text-amber-300 text-xs px-3 py-1 rounded-full font-semibold border border-amber-500/30">
+                    Aprende el Deporte Olímpico
+                </span>
+                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+                    Domina el Voleibol desde las Reglas hasta la Cancha
+                </h1>
+                <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                    Aprende la reglamentación oficial FIVB con casos de juego reales, perfecciona la técnica de golpeo y pon a prueba tus conocimientos en la cancha interactiva.
+                </p>
+            </div>
+            <div class="flex flex-wrap gap-3 justify-center">
+                <button onclick="switchTab('game')" class="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold px-6 py-3 rounded-xl shadow-lg hover:shadow-orange-500/30 transition-all transform hover:-translate-y-0.5 flex items-center gap-2">
+                    <i class="fa-solid fa-play"></i> Jugar Mini Juego 1v1
+                </button>
+                <button onclick="switchTab('quiz')" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 font-semibold px-6 py-3 rounded-xl transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap"></i> Probar Quiz (Trivia)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+
+        <!-- ================= TAB 1: REGLAS Y CASOS PRÁCTICOS ================= -->
+        <section id="tab-rules" class="tab-content space-y-8">
+            <div class="text-center max-w-3xl mx-auto space-y-2">
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Reglas Fundamentales y Situaciones de Juego</h2>
+                <p class="text-slate-600 text-sm sm:text-base">Haz clic en cada regla para desplegar explicaciones a detalle e ilustradas con situaciones reales de partido.</p>
+            </div>
+
+            <!-- Rules Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <!-- Rule Card 1 -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-all">
+                    <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4">
+                        <i class="fa-solid fa-hand-fist"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">Máximo de 3 Toques por Equipo</h3>
+                    <p class="text-slate-600 text-sm mb-4 leading-relaxed">
+                        Cada equipo dispone de un máximo de tres toques para regresar el balón por encima de la red al campo contrario. Un jugador no puede tocar el balón dos veces consecutivas.
+                    </p>
+                    <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-xl">
+                        <p class="text-xs text-amber-900 font-medium">
+                            <span class="font-bold block text-amber-950">📌 Caso Práctico:</span>
+                            Si el balón toca el bloqueo del equipo A, este contacto **NO** se cuenta como toque. El equipo A aún mantiene sus 3 toques reglamentarios.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Rule Card 2 -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-all">
+                    <div class="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4">
+                        <i class="fa-solid fa-ban"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">Infracciones en la Red</h3>
+                    <p class="text-slate-600 text-sm mb-4 leading-relaxed">
+                        Está prohibido tocar la cinta superior de la red durante la acción de jugar el balón. Tampoco se puede invadir completamente el campo contrario por debajo de la red interrumpiendo al rival.
+                    </p>
+                    <div class="bg-red-50 border-l-4 border-red-500 p-3 rounded-r-xl">
+                        <p class="text-xs text-red-900 font-medium">
+                            <span class="font-bold block text-red-950">📌 Caso Práctico:</span>
+                            Si rozas el cuerpo de la red de manera involuntaria sin interferir ni tocar la banda superior blanca, la jugada continúa normalmente.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Rule Card 3 -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-all">
+                    <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">El Jugador Líbero</h3>
+                    <p class="text-slate-600 text-sm mb-4 leading-relaxed">
+                        Es el especialista defensivo. Utiliza una camiseta de distinto color. Puede entrar y salir de la zona trasera sin avisar al árbitro, pero no puede sacar, bloquear ni rematar sobre la red.
+                    </p>
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-3 rounded-r-xl">
+                        <p class="text-xs text-blue-900 font-medium">
+                            <span class="font-bold block text-blue-950">📌 Caso Práctico:</span>
+                            Si el Líbero hace un pase de voleo con dedos estando DENTRO de la zona de 3m, ningún compañero puede rematar ese balón por encima de la red.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Rule Card 4 -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-all">
+                    <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4">
+                        <i class="fa-solid fa-arrows-spin"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">Rotación Obligatoria</h3>
+                    <p class="text-slate-600 text-sm mb-4 leading-relaxed">
+                        Cada vez que un equipo gana el saque al rival (recupera el servicio), sus 6 jugadores deben rotar una posición en el sentido de las agujas del reloj.
+                    </p>
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-3 rounded-r-xl">
+                        <p class="text-xs text-emerald-900 font-medium">
+                            <span class="font-bold block text-emerald-950">📌 Caso Práctico:</span>
+                            Si un jugador realiza el saque estando fuera de su orden posicional, el árbitro pita "Falta de Rotación" y el punto se otorga inmediatamente al contrario.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Rule Card 5 -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-all">
+                    <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">Puntuación y Sets</h3>
+                    <p class="text-slate-600 text-sm mb-4 leading-relaxed">
+                        Se juega al mejor de 5 sets (gana quien obtenga 3 sets). Los primeros 4 sets son a 25 puntos (con ventaja de 2). En caso de empate 2-2, el set decisivo se juega a 15 puntos.
+                    </p>
+                    <div class="bg-purple-50 border-l-4 border-purple-500 p-3 rounded-r-xl">
+                        <p class="text-xs text-purple-900 font-medium">
+                            <span class="font-bold block text-purple-950">📌 Caso Práctico:</span>
+                            Si el marcador está 24-24 en el primer set, el juego continúa hasta que un equipo saque 2 puntos de ventaja (ejemplo: 26-24 o 28-26).
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Rule Card 6 -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-all">
+                    <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4">
+                        <i class="fa-solid fa-expand"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">Ataque de Zagueros</h3>
+                    <p class="text-slate-600 text-sm mb-4 leading-relaxed">
+                        Los jugadores posicionados en la zona trasera (zagueros: zonas 1, 6 y 5) pueden atacar la pelota por encima del borde de la red únicamente si su salto se realiza detrás de la línea de 3 metros.
+                    </p>
+                    <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-xl">
+                        <p class="text-xs text-amber-900 font-medium">
+                            <span class="font-bold block text-amber-950">📌 Caso Práctico:</span>
+                            Si un zaguero pisa la línea de 3 metros durante la batida de salto y el balón está por encima del borde superior de la red, comete "Falta de Zaguero".
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= TAB 2: GUÍA DE TÉCNICAS Y ENTRENAMIENTO ================= -->
+        <section id="tab-techniques" class="tab-content hidden space-y-8">
+            <div class="text-center max-w-3xl mx-auto space-y-2">
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Fundamentos Técnicos del Voleibol</h2>
+                <p class="text-slate-600 text-sm sm:text-base">Haz clic en cada técnica para aprender la postura corporal correcta y secretos de ejecución.</p>
+            </div>
+
+            <!-- Interactive Technique Selector Tabs -->
+            <div class="flex flex-wrap justify-center gap-2 border-b border-slate-200 pb-4" id="tech-tabs-container">
+                <button onclick="showTechnique('saque')" id="tech-btn-saque" class="tech-tab-btn active bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all">
+                    🎯 Saque (Servicio)
+                </button>
+                <button onclick="showTechnique('antebrazo')" id="tech-btn-antebrazo" class="tech-tab-btn bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all">
+                    🛡️ Antebrazo (Pase / Recepción)
+                </button>
+                <button onclick="showTechnique('voleo')" id="tech-btn-voleo" class="tech-tab-btn bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all">
+                    👐 Voleo (Colocación)
+                </button>
+                <button onclick="showTechnique('remate')" id="tech-btn-remate" class="tech-tab-btn bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all">
+                    🚀 Remate (Ataque)
+                </button>
+                <button onclick="showTechnique('bloqueo')" id="tech-btn-bloqueo" class="tech-tab-btn bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all">
+                    🧱 Bloqueo (Defensa Alta)
+                </button>
+            </div>
+
+            <!-- Technique Display Box -->
+            <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 sm:p-8 max-w-4xl mx-auto" id="technique-detail">
+                <!-- Content injected dynamically via JS -->
+            </div>
+        </section>
+
+        <!-- ================= TAB 3: MINI JUEGO 1v1 EN CANVAS ================= -->
+        <section id="tab-game" class="tab-content hidden space-y-6">
+            <div class="text-center max-w-3xl mx-auto space-y-2">
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Simulador de Voleibol 1v1 contra Bot IA</h2>
+                <p class="text-slate-600 text-sm sm:text-base">Pone a prueba tus reflejos. El Entrenador de la IA te dará retroalimentación táctica en tiempo real después de cada jugada.</p>
+            </div>
+
+            <!-- Game Container -->
+            <div class="max-w-4xl mx-auto bg-slate-900 rounded-3xl p-4 sm:p-6 shadow-2xl border border-slate-800">
+
+                <!-- Score Board -->
+                <div class="flex items-center justify-between bg-slate-800/80 px-6 py-4 rounded-2xl mb-4 border border-slate-700/50">
+                    <!-- Player Score -->
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-lg">
+                            👤
+                        </div>
+                        <div>
+                            <span class="block text-xs text-indigo-300 font-semibold uppercase">Jugador (Tú)</span>
+                            <span id="player-score" class="text-2xl font-black text-white">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Target Indicator -->
+                    <div class="text-center">
+                        <span class="text-xs text-slate-400 block font-medium">Meta para Ganar</span>
+                        <span class="text-sm font-bold text-amber-400 bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20">5 Puntos</span>
+                    </div>
+
+                    <!-- Bot Score -->
+                    <div class="flex items-center gap-3 text-right">
+                        <div>
+                            <span class="block text-xs text-orange-300 font-semibold uppercase">Coach Bot IA</span>
+                            <span id="bot-score" class="text-2xl font-black text-white">0</span>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-orange-600 flex items-center justify-center text-white font-bold text-lg">
+                            🤖
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tactical Coach Feedback Banner -->
+                <div id="coach-banner" class="bg-indigo-950/80 border border-indigo-500/40 p-3 rounded-xl mb-4 text-center transition-all duration-300">
+                    <p class="text-xs sm:text-sm text-indigo-200 font-medium flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-lightbulb text-amber-400 text-base"></i>
+                        <span id="coach-message">¡Usa las flechas o WASD para moverte y saltar! Golpea el balón con ímpetu para superar la red.</span>
+                    </p>
+                </div>
+
+                <!-- Canvas Display -->
+                <div class="relative w-full overflow-hidden rounded-2xl bg-gradient-to-b from-slate-950 via-slate-900 to-indigo-950 border border-slate-800 flex justify-center items-center">
+                    <canvas id="gameCanvas" width="800" height="400" class="w-full max-w-full h-auto block rounded-2xl"></canvas>
+                </div>
+
+                <!-- Controls & Restart -->
+                <div class="mt-6 flex flex-wrap items-center justify-between gap-4">
+                    <!-- Controls Legend -->
+                    <div class="text-slate-400 text-xs hidden sm:block">
+                        <span class="font-bold text-slate-200">Controles:</span> Flechas / WASD para moverte y saltar.
+                    </div>
+
+                    <!-- Reset Button -->
+                    <button onclick="resetGame()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl border border-slate-700 transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-rotate-right"></i> Reiniciar Partido
+                    </button>
+                </div>
+
+                <!-- Mobile Touch Buttons -->
+                <div class="grid grid-cols-3 gap-3 mt-4 sm:hidden">
+                    <button id="btn-left" class="bg-slate-800 active:bg-indigo-600 text-white font-bold py-3 rounded-xl text-center border border-slate-700 text-lg">
+                        ⬅️ Izquierda
+                    </button>
+                    <button id="btn-jump" class="bg-amber-500 active:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl text-center border border-amber-400 text-lg">
+                        🚀 Saltar
+                    </button>
+                    <button id="btn-right" class="bg-slate-800 active:bg-indigo-600 text-white font-bold py-3 rounded-xl text-center border border-slate-700 text-lg">
+                        Derecha ➡️
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= TAB 4: QUIZ TRIVIA ================= -->
+        <section id="tab-quiz" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 sm:p-8 shadow-xl border border-slate-100 max-w-3xl mx-auto">
+                <div class="text-center mb-6">
+                    <div class="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-2">
+                        🎲 Evaluador de Conocimientos
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800">Quiz de Voleibol Aleatorio</h2>
+                    <p class="text-slate-500 text-sm mt-1">
+                        Cada partida selecciona 10 preguntas al azar de un banco de 25 preguntas sobre historia, reglas FIVB, posiciones, volei de playa y más.
+                    </p>
+                </div>
+
+                <!-- Quiz Container -->
+                <div id="quiz-container">
+                    <!-- Progress Bar -->
+                    <div class="mb-6">
+                        <div class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                            <span id="quiz-progress-text">Pregunta 1 de 10</span>
+                            <span id="quiz-score-text">Puntos: 0</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                            <div id="quiz-progress-bar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-300" style="width: 10%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Question Card -->
+                    <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200 mb-6">
+                        <span id="question-category" class="inline-block bg-indigo-100 text-indigo-800 text-[11px] font-bold px-2.5 py-0.5 rounded-full mb-3">
+                            Categoría
+                        </span>
+                        <h3 id="question-title" class="text-lg sm:text-xl font-bold text-slate-800 mb-4">
+                            Cargando pregunta...
+                        </h3>
+
+                        <!-- Options -->
+                        <div id="quiz-options" class="space-y-3">
+                            <!-- Options injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Feedback Alert -->
+                    <div id="quiz-feedback" class="hidden p-4 rounded-xl text-sm font-medium border mb-6 transition-all">
+                        <!-- Feedback content -->
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="flex justify-between items-center">
+                        <button onclick="initQuiz()" class="text-xs text-slate-500 hover:text-indigo-600 font-semibold flex items-center gap-1">
+                            <i class="fa-solid fa-rotate"></i> Reiniciar y Barajar
+                        </button>
+                        <button id="next-question-btn" onclick="nextQuestion()" class="hidden bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-md transition-all">
+                            Siguiente Pregunta <i class="fa-solid fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quiz Results Screen (Hidden initially) -->
+                <div id="quiz-results" class="hidden text-center py-6 space-y-6">
+                    <div class="w-24 h-24 rounded-full bg-indigo-50 border-4 border-indigo-200 flex items-center justify-center mx-auto text-4xl shadow-inner">
+                        🏆
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-slate-800">¡Quiz Completado!</h3>
+                        <p class="text-slate-500 text-sm mt-1" id="results-feedback">Gran trabajo demostrando tus conocimientos.</p>
+                    </div>
+
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 max-w-sm mx-auto">
+                        <div class="text-xs text-slate-500 font-medium uppercase tracking-wider">Tu Puntuación</div>
+                        <div class="text-4xl font-extrabold text-indigo-600 my-1" id="final-score">0 / 10</div>
+                        <div class="text-xs font-semibold text-slate-600" id="accuracy-percentage">0% de aciertos</div>
+                    </div>
+
+                    <button onclick="initQuiz()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:shadow-indigo-500/25 transition-all">
+                        <i class="fa-solid fa-shuffle mr-2"></i> Jugar de Nuevo con Preguntas Nuevas
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-8 text-center text-xs border-t border-slate-800 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 space-y-3">
+            <div class="flex items-center justify-center space-x-2 text-white font-semibold">
+                <i class="fa-solid fa-volleyball text-amber-500"></i>
+                <span>Volleyball Academy &copy; 2026</span>
+            </div>
+            <p class="text-slate-500">Plataforma educativa e interactiva diseñada para el aprendizaje de las reglas y técnicas de voleibol.</p>
+        </div>
+    </footer>
+
+
+    <!-- ================= JAVASCRIPT CODE ================= -->
+    <script>
+        function switchTab(tabId) {
+            // Hide all tab content sections
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(el => el.classList.add('hidden'));
+
+            // Show selected tab
+            const target = document.getElementById('tab-' + tabId);
+            if (target) {
+                target.classList.remove('hidden');
+            }
+
+            // Update navigation button active state
+            const navBtns = document.querySelectorAll('.nav-btn');
+            navBtns.forEach(btn => btn.classList.remove('active-tab'));
+
+            const activeNav = document.getElementById('nav-' + tabId);
+            if (activeNav) {
+                activeNav.classList.add('active-tab');
+            }
+
+            // Resize and initialize canvas if game tab selected
+            if (tabId === 'game') {
+                setTimeout(() => {
+                    initGame();
+                }, 50);
+            }
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu) {
+                menu.classList.toggle('hidden');
+            }
+        }
+
+        const techniqueData = {
+            saque: {
+                title: "🎯 El Saque (Servicio)",
+                subtitle: "El único gesto técnico donde el jugador tiene control total del balón sin oposición directa.",
+                steps: [
+                    "<strong>Postura:</strong> Coloca el pie contrario a la mano ejecutora al frente. Mantén los hombros alineados hacia la zona objetivo.",
+                    "<strong>Lanzamiento del balón:</strong> Eleva el balón de forma vertical, suave y sin rotación, aproximadamente a 1 metro sobre la cabeza.",
+                    "<strong>Contacto:</strong> Impacta en el centro exacto del balón con la palma de la mano rígida para un saque flotante, o extendiendo el brazo para potencia."
+                ],
+                tip: "💡 Consejo Clave: No des un paso dentro de la línea de fondo antes de golpear el balón, o el árbitro te señalará falta de pie."
+            },
+            antebrazo: {
+                title: "🛡️ Pase de Antebrazo (Recepción / Defensa)",
+                subtitle: "La base defensiva del equipo para amortiguar saques y remates potentes.",
+                steps: [
+                    "<strong>Plataforma de Brazos:</strong> Une las manos entrelazando dedos o sobreponiendo palmas, extendiendo los codos por completo.",
+                    "<strong>Posición de Piernas:</strong> Flexiona las rodillas con los pies más abiertos que los hombros y el centro de gravedad bajo.",
+                    "<strong>Direccionamiento:</strong> Acompaña el balón con la extensión de piernas hacia el objetivo, sin balancear bruscamente los brazos."
+                ],
+                tip: "💡 Consejo Clave: El balón debe impactar en la cara interna del tercio medio de los antebrazos, no sobre las muñecas ni puños."
+            },
+            voleo: {
+                title: "👐 El Voleo (Colocación / Armado)",
+                subtitle: "Gesto técnico de precisión utilizado por el armador para proyectar los ataques del equipo.",
+                steps: [
+                    "<strong>Triángulo Formado:</strong> Forma un triángulo o rombo con los dedos pulgares e índices justo por encima de la frente.",
+                    "<strong>Contacto Limpio:</strong> Contacta el balón únicamente con las yemas de los dedos, amortiguando ligeramente el impacto.",
+                    "<strong>Impulso Simétrico:</strong> Extiende simultáneamente brazos y piernas dirigiendo el balón con suavidad."
+                ],
+                tip: "💡 Consejo Clave: Si las manos no tocan el balón simultáneamente, se pitará falta de 'Doble Contacto'. No retengas la pelota."
+            },
+            remate: {
+                title: "🚀 El Remate (Ataque)",
+                subtitle: "La principal arma ofensiva para conseguir puntos buscando espacios libres o el bloqueo del rival.",
+                steps: [
+                    "<strong>Carrera de Impulso:</strong> Realiza una carrera de 3 pasos (Izquierda-Derecha-Izquierda para diestros) ganando aceleración.",
+                    "<strong>Batida y Salto:</strong> Despega con ambos pies convirtiendo la velocidad horizontal en altura vertical.",
+                    "<strong>Golpeo en Cúspide:</strong> Arme el brazo en forma de arco y golpea el balón en el punto más alto con la mano abierta envolviéndolo."
+                ],
+                tip: "💡 Consejo Clave: Coordina el salto con la trayectoria del pase del colocador para impactar el balón delante del cuerpo."
+            },
+            bloqueo: {
+                title: "🧱 El Bloqueo (Defensa de Red)",
+                subtitle: "La primera línea de defensa para interceptar o frenar los remates del equipo adversario.",
+                steps: [
+                    "<strong>Posición Inicial:</strong> De pie cerca de la red, codos flexionados y palmas de las manos a la altura del pecho hacia el frente.",
+                    "<strong>Desplazamiento Lateral:</strong> Mantén la mirada en el rematador rival y salta de forma vertical sin invadir horizontalmente.",
+                    "<strong>Manos Abiertas sobre la Red:</strong> Penetra con las manos firmes por encima del borde de la red orientándolas hacia la cancha rival."
+                ],
+                tip: "💡 Consejo Clave: Mantén los ojos abiertos durante todo el salto y evita tocar la red con el cuerpo o brazos al descender."
+            }
+        };
+
+        function showTechnique(key) {
+            const data = techniqueData[key];
+            if (!data) return;
+
+            const buttons = document.querySelectorAll('.tech-tab-btn');
+            buttons.forEach(btn => {
+                btn.className = "tech-tab-btn bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all";
+            });
+            const activeBtn = document.getElementById('tech-btn-' + key);
+            if (activeBtn) {
+                activeBtn.className = "tech-tab-btn active bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all";
+            }
+
+            const detailContainer = document.getElementById('technique-detail');
+            detailContainer.innerHTML = `
+                <div class="space-y-6">
+                    <div class="border-b border-slate-100 pb-4">
+                        <h3 class="text-2xl font-extrabold text-slate-900 flex items-center gap-3">
+                            ${data.title}
+                        </h3>
+                        <p class="text-slate-600 text-sm mt-1">${data.subtitle}</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h4 class="text-sm font-bold uppercase tracking-wider text-indigo-600">Fases de Ejecución Correcta</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            ${data.steps.map((step, i) => `
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                    <span class="w-7 h-7 bg-indigo-600 text-white font-extrabold text-xs rounded-lg flex items-center justify-center mb-3">
+                                        0${i+1}
+                                    </span>
+                                    <p class="text-xs text-slate-700 leading-relaxed">${step}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="bg-amber-50 border border-amber-200/80 p-4 rounded-2xl flex items-start gap-3">
+                        <i class="fa-solid fa-circle-info text-amber-500 text-xl mt-0.5"></i>
+                        <p class="text-xs font-semibold text-amber-900 leading-relaxed">${data.tip}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        let canvas, ctx;
+        let gameAnimFrame;
+        let player, bot, ball;
+        let playerScore = 0;
+        let botScore = 0;
+        let gameOver = false;
+
+        const keys = {
+            left: false,
+            right: false,
+            jump: false
+        };
+
+        function initGame() {
+            canvas = document.getElementById('gameCanvas');
+            if (!canvas) return;
+            ctx = canvas.getContext('2d');
+
+            player = {
+                x: 150,
+                y: 300,
+                width: 35,
+                height: 55,
+                vx: 0,
+                vy: 0,
+                speed: 5.5,
+                jumping: false,
+                color: '#4f46e5'
+            };
+
+            bot = {
+                x: 615,
+                y: 300,
+                width: 35,
+                height: 55,
+                vx: 0,
+                vy: 0,
+                speed: 4.2,
+                jumping: false,
+                color: '#ea580c'
+            };
+
+            ball = {
+                x: 200,
+                y: 120,
+                radius: 14,
+                vx: 3.5,
+                vy: -2,
+                gravity: 0.28,
+                bounce: 0.82
+            };
+
+            setupMobileControls();
+
+            window.onkeydown = (e) => {
+                if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.left = true;
+                if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = true;
+                if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W' || e.key === ' ') {
+                    keys.jump = true;
+                    e.preventDefault();
+                }
+            };
+
+            window.onkeyup = (e) => {
+                if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.left = false;
+                if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = false;
+                if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W' || e.key === ' ') keys.jump = false;
+            };
+
+            if (gameAnimFrame) cancelAnimationFrame(gameAnimFrame);
+            gameLoop();
+        }
+
+        function setupMobileControls() {
+            const bLeft = document.getElementById('btn-left');
+            const bRight = document.getElementById('btn-right');
+            const bJump = document.getElementById('btn-jump');
+
+            if (bLeft) {
+                bLeft.ontouchstart = (e) => { keys.left = true; e.preventDefault(); };
+                bLeft.ontouchend = () => keys.left = false;
+                bLeft.onmousedown = () => keys.left = true;
+                bLeft.onmouseup = () => keys.left = false;
+            }
+            if (bRight) {
+                bRight.ontouchstart = (e) => { keys.right = true; e.preventDefault(); };
+                bRight.ontouchend = () => keys.right = false;
+                bRight.onmousedown = () => keys.right = true;
+                bRight.onmouseup = () => keys.right = false;
+            }
+            if (bJump) {
+                bJump.ontouchstart = (e) => { keys.jump = true; e.preventDefault(); };
+                bJump.ontouchend = () => keys.jump = false;
+                bJump.onmousedown = () => keys.jump = true;
+                bJump.onmouseup = () => keys.jump = false;
+            }
+        }
+
+        function resetGame() {
+            playerScore = 0;
+            botScore = 0;
+            gameOver = false;
+            document.getElementById('player-score').innerText = '0';
+            document.getElementById('bot-score').innerText = '0';
+            setCoachMessage("¡Partido iniciado! Muévete con agilidad para cubrir tu zona del campo.");
+            resetPositions(1);
+        }
+
+        function resetPositions(server) {
+            player.x = 150;
+            player.y = 300;
+            player.vx = 0;
+            player.vy = 0;
+
+            bot.x = 615;
+            bot.y = 300;
+            bot.vx = 0;
+            bot.vy = 0;
+
+            ball.y = 120;
+            ball.vy = -1;
+
+            if (server === 1) { // Player serves
+                ball.x = 200;
+                ball.vx = 3;
+            } else { // Bot serves
+                ball.x = 600;
+                ball.vx = -3;
+            }
+        }
+
+        function setCoachMessage(msg) {
+            const el = document.getElementById('coach-message');
+            if (el) el.innerText = msg;
+        }
+
+        function gameLoop() {
+            updatePhysics();
+            drawCanvas();
+            if (!gameOver) {
+                gameAnimFrame = requestAnimationFrame(gameLoop);
+            }
+        }
+
+        function updatePhysics() {
+            if (gameOver) return;
+
+            const netX = 400;
+            const netWidth = 10;
+            const netHeight = 140;
+            const netY = 400 - netHeight;
+
+            // Player physics
+            if (keys.left && player.x > 15) player.x -= player.speed;
+            if (keys.right && player.x < netX - player.width - 5) player.x += player.speed;
+            if (keys.jump && !player.jumping) {
+                player.vy = -10.5;
+                player.jumping = true;
+            }
+            player.y += player.vy;
+            player.vy += 0.5;
+            if (player.y >= 300) {
+                player.y = 300;
+                player.vy = 0;
+                player.jumping = false;
+            }
+
+            // AI Bot logic
+            const targetX = ball.x > 410 ? ball.x - 15 : 620;
+            if (bot.x < targetX - 5 && bot.x < 750) bot.x += bot.speed;
+            if (bot.x > targetX + 5 && bot.x > netX + netWidth + 5) bot.x -= bot.speed;
+
+            if (ball.x > 450 && ball.x < 720 && ball.y < 230 && !bot.jumping && Math.random() < 0.08) {
+                bot.vy = -10;
+                bot.jumping = true;
+            }
+            bot.y += bot.vy;
+            bot.vy += 0.5;
+            if (bot.y >= 300) {
+                bot.y = 300;
+                bot.vy = 0;
+                bot.jumping = false;
+            }
+
+            // Ball Physics
+            ball.x += ball.vx;
+            ball.y += ball.vy;
+            ball.vy += ball.gravity;
+
+            if (ball.x - ball.radius <= 0) {
+                ball.x = ball.radius;
+                ball.vx *= -1;
+            }
+            if (ball.x + ball.radius >= 800) {
+                ball.x = 800 - ball.radius;
+                ball.vx *= -1;
+            }
+
+            // Net Collision
+            if (ball.x + ball.radius > netX && ball.x - ball.radius < netX + netWidth && ball.y + ball.radius > netY) {
+                ball.vx *= -0.8;
+                if (ball.x < netX) ball.x = netX - ball.radius;
+                else ball.x = netX + netWidth + ball.radius;
+            }
+
+            // Player Collision
+            if (checkCollision(player, ball)) {
+                ball.vy = -9;
+                ball.vx = (ball.x - (player.x + player.width / 2)) * 0.35 + 2.5;
+                setCoachMessage("¡Buen remate! Busca colocar la pelota lejos del defensor.");
+            }
+
+            // Bot Collision
+            if (checkCollision(bot, ball)) {
+                ball.vy = -9;
+                ball.vx = (ball.x - (bot.x + bot.width / 2)) * 0.35 - 2.5;
+            }
+
+            // Floor Collision (Scoring)
+            if (ball.y + ball.radius >= 355) {
+                if (ball.x < netX) {
+                    botScore++;
+                    document.getElementById('bot-score').innerText = botScore;
+                    setCoachMessage("💡 Consejo: Anticipa la caída del balón y salta a tiempo para bloquear.");
+                    if (botScore >= 5) {
+                        gameOver = true;
+                        setCoachMessage("🎉 ¡Fin del partido! Gana el Coach Bot. ¡Inténtalo de nuevo!");
+                    } else {
+                        resetPositions(1);
+                    }
+                } else {
+                    playerScore++;
+                    document.getElementById('player-score').innerText = playerScore;
+                    setCoachMessage("⚡ ¡Excelente punto! Variar la altura y potencia dificulta la defensa rival.");
+                    if (playerScore >= 5) {
+                        gameOver = true;
+                        setCoachMessage("🏆 ¡Felicidades! Has ganado el partido 1v1.");
+                    } else {
+                        resetPositions(2);
+                    }
+                }
+            }
+        }
+
+        function checkCollision(p, b) {
+            return (
+                b.x + b.radius > p.x &&
+                b.x - b.radius < p.x + p.width &&
+                b.y + b.radius > p.y &&
+                b.y - b.radius < p.y + p.height
+            );
+        }
+
+        function drawCanvas() {
+            if (!ctx) return;
+
+            ctx.clearRect(0, 0, 800, 400);
+
+            // Court Floor
+            ctx.fillStyle = '#1e3a8a';
+            ctx.fillRect(0, 355, 800, 45);
+
+            ctx.fillStyle = '#f59e0b';
+            ctx.fillRect(0, 350, 800, 5);
+
+            // Net
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fillRect(397, 210, 6, 140);
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(395, 210, 10, 12);
+
+            // Player Rendering
+            ctx.fillStyle = player.color;
+            ctx.beginPath();
+            ctx.roundRect(player.x, player.y, player.width, player.height, 10);
+            ctx.fill();
+
+            ctx.fillStyle = '#fde047';
+            ctx.beginPath();
+            ctx.arc(player.x + player.width / 2, player.y - 12, 14, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Bot Rendering
+            ctx.fillStyle = bot.color;
+            ctx.beginPath();
+            ctx.roundRect(bot.x, bot.y, bot.width, bot.height, 10);
+            ctx.fill();
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.beginPath();
+            ctx.arc(bot.x + bot.width / 2, bot.y - 12, 14, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Ball Rendering
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#2563eb';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+        }
+
+        const quizBank = [
+            {
+                category: "Historia del Deporte",
+                question: "¿En qué año y con qué nombre fue creado originalmente el voleibol?",
+                options: [
+                    "En 1895 por William G. Morgan bajo el nombre de 'Mintonette'.",
+                    "En 1900 por James Naismith bajo el nombre de 'Volley-Ball'.",
+                    "En 1912 por la YMCA como 'Faustball'.",
+                    "En 1880 en Inglaterra como 'Badminton de Sala'."
+                ],
+                correct: 0,
+                explanation: "William G. Morgan inventó el juego en 1895 en Holyoke, Massachusetts, buscando un deporte bajo techo con menos contacto físico que el baloncesto."
+            },
+            {
+                category: "Reglas Oficiales FIVB",
+                question: "¿Cuántos toques máximos permite el reglamento por equipo antes de pasar el balón?",
+                options: [
+                    "4 toques",
+                    "3 toques (sin contar el bloqueo)",
+                    "2 toques obligatorios",
+                    "Un toque por cada jugador"
+                ],
+                correct: 1,
+                explanation: "Cada equipo cuenta con un máximo de 3 toques para enviar el balón a la cancha rival. El contacto en el bloqueo no computa como toque."
+            },
+            {
+                category: "Posiciones y Especialistas",
+                question: "¿Cuál de las siguientes acciones está PROHIBIDA para el jugador Líbero?",
+                options: [
+                    "Realizar pases de antebrazo en zona defensiva.",
+                    "Hacer un saque o rematar un balón por encima del borde de la red.",
+                    "Sustituir a un jugador de la zona trasera sin aviso previo.",
+                    "Comunicarse con el capitán del equipo."
+                ],
+                correct: 1,
+                explanation: "El Líbero es especialista en defensa y recepción; no se le permite sacar, bloquear ni completar un remate sobre la altura de la red."
+            },
+            {
+                category: "Puntuación y Sets",
+                question: "¿Cómo se decide el ganador en el quinto set (set de desempate o tie-break)?",
+                options: [
+                    "Gana el primero en llegar a 25 puntos.",
+                    "Gana el primero en alcanzar 15 puntos con diferencia de al menos 2.",
+                    "Se juega a un tiempo fijo de 10 minutos.",
+                    "El primero que anote 10 puntos consecutivos."
+                ],
+                correct: 1,
+                explanation: "El set decisivo (5º set) se juega a 15 puntos con ventaja mínima de 2 puntos para el ganador."
+            },
+            {
+                category: "Infracciones de Juego",
+                question: "¿Qué ocurre si un zaguero salta para rematar pisando la línea de 3 metros?",
+                options: [
+                    "La jugada es válida si el balón no toca la red.",
+                    "Se señala falta de zaguero y el punto se otorga al equipo contrario.",
+                    "El árbitro ordena repetir la jugada.",
+                    "Se penaliza con tarjeta amarilla."
+                ],
+                correct: 1,
+                explanation: "Los jugadores zagueros deben iniciar su salto detrás de la línea de 3m si van a impactar el balón por encima de la red."
+            },
+            {
+                category: "Dimensiones de la Cancha",
+                question: "¿Cuáles son las medidas oficiales de una cancha de voleibol bajo techo?",
+                options: [
+                    "20 metros de largo por 10 metros de ancho.",
+                    "18 metros de largo por 9 metros de ancho.",
+                    "15 metros de largo por 8 metros de ancho.",
+                    "22 metros de largo por 11 metros de ancho."
+                ],
+                correct: 1,
+                explanation: "La cancha oficial de voleibol mide 18x9 metros, dividida en dos campos de 9x9 metros por la red central."
+            },
+            {
+                category: "Tácticas de Juego",
+                question: "¿En qué consiste el sistema de juego táctico 5-1?",
+                options: [
+                    "5 atacantes y 1 armador (colocador) único.",
+                    "5 defensas y 1 bloqueador central.",
+                    "5 saques consecutivos por jugador.",
+                    "1 jugador zaguero y 5 atacantes de red."
+                ],
+                correct: 0,
+                explanation: "El sistema 5-1 utiliza un único armador para dirigir toda la ofensiva independientemente de la rotación."
+            },
+            {
+                category: "Voleibol de Playa",
+                question: "¿Cuántos jugadores integran un equipo en cancha en el voleibol de playa oficial?",
+                options: [
+                    "6 jugadores por lado.",
+                    "4 jugadores por lado.",
+                    "2 jugadores por lado (sin sustitutos).",
+                    "3 jugadores por lado."
+                ],
+                correct: 2,
+                explanation: "En la modalidad olímpica de voleibol de playa, los equipos constan de solo 2 jugadores en cancha sin cambios."
+            },
+            {
+                category: "Arbitraje y Señales",
+                question: "Si el árbitro mueve la mano horizontalmente sobre la red, ¿qué falta está indicando?",
+                options: [
+                    "Invasión de cancha por debajo de la red o toque de red.",
+                    "Balón fuera de los límites.",
+                    "Falta de rotación.",
+                    "Doble contacto."
+                ],
+                correct: 0,
+                explanation: "Este gesto señala una infracción en la red, ya sea toque de la banda superior o invasión del campo rival."
+            },
+            {
+                category: "Técnica de Golpeo",
+                question: "¿Cuál es el error técnico común que provoca la falta de 'Doble Contacto' en el voleo?",
+                options: [
+                    "Golpear el balón con la palma abierta.",
+                    "Contacto no simultáneo de las manos con el balón.",
+                    "Flexionar demasiado las rodillas.",
+                    "Saltar al momento de entregar el pase."
+                ],
+                correct: 1,
+                explanation: "El doble contacto ocurre cuando las manos no tocan la pelota al mismo tiempo, generando un rebote desigual."
+            }
+        ];
+
+        let currentQuizQuestions = [];
+        let quizCurrentIndex = 0;
+        let quizScore = 0;
+
+        function initQuiz() {
+            // Shuffle and pick 10 questions from bank
+            const shuffled = [...quizBank].sort(() => 0.5 - Math.random());
+            currentQuizQuestions = shuffled.slice(0, 10);
+            
+            quizCurrentIndex = 0;
+            quizScore = 0;
+
+            document.getElementById('quiz-results').classList.add('hidden');
+            document.getElementById('quiz-container').classList.remove('hidden');
+
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            if (quizCurrentIndex >= currentQuizQuestions.length) {
+                showQuizResults();
+                return;
+            }
+
+            const q = currentQuizQuestions[quizCurrentIndex];
+
+            // Progress Update
+            document.getElementById('quiz-progress-text').innerText = `Pregunta ${quizCurrentIndex + 1} de ${currentQuizQuestions.length}`;
+            document.getElementById('quiz-score-text').innerText = `Puntos: ${quizScore}`;
+            document.getElementById('quiz-progress-bar').style.width = `${((quizCurrentIndex + 1) / currentQuizQuestions.length) * 100}%`;
+
+            // Question Render
+            document.getElementById('question-category').innerText = q.category;
+            document.getElementById('question-title').innerText = q.question;
+
+            // Hide previous feedback
+            const feedbackEl = document.getElementById('quiz-feedback');
+            feedbackEl.classList.add('hidden');
+            feedbackEl.className = "hidden p-4 rounded-xl text-sm font-medium border mb-6 transition-all";
+
+            // Next button hide
+            document.getElementById('next-question-btn').classList.add('hidden');
+
+            // Render Options
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "quiz-opt-btn w-full text-left p-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 hover:border-slate-300 transition-all font-medium text-slate-700 flex items-center justify-between";
+                btn.onclick = () => checkAnswer(idx);
+                btn.innerHTML = `
+                    <span>${opt}</span>
+                    <i class="fa-regular fa-circle text-slate-300 text-lg"></i>
+                `;
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIndex) {
+            const q = currentQuizQuestions[quizCurrentIndex];
+            const optBtns = document.querySelectorAll('.quiz-opt-btn');
+            const feedbackEl = document.getElementById('quiz-feedback');
+
+            // Disable all buttons
+            optBtns.forEach(btn => btn.disabled = true);
+
+            if (selectedIndex === q.correct) {
+                quizScore++;
+                optBtns[selectedIndex].className = "quiz-opt-btn w-full text-left p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 font-semibold text-emerald-900 flex items-center justify-between";
+                optBtns[selectedIndex].querySelector('i').className = "fa-solid fa-circle-check text-emerald-600 text-lg";
+
+                feedbackEl.className = "p-4 rounded-xl text-sm font-medium border bg-emerald-50 border-emerald-200 text-emerald-900 mb-6";
+                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i><strong>¡Correcto!</strong> ${q.explanation}`;
+            } else {
+                optBtns[selectedIndex].className = "quiz-opt-btn w-full text-left p-4 rounded-xl border-2 border-red-500 bg-red-50 font-semibold text-red-900 flex items-center justify-between";
+                optBtns[selectedIndex].querySelector('i').className = "fa-solid fa-circle-xmark text-red-600 text-lg";
+
+                // Highlight correct option
+                optBtns[q.correct].className = "quiz-opt-btn w-full text-left p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 font-semibold text-emerald-900 flex items-center justify-between";
+
+                feedbackEl.className = "p-4 rounded-xl text-sm font-medium border bg-red-50 border-red-200 text-red-900 mb-6";
+                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark text-red-600 mr-2"></i><strong>Incorrecto.</strong> ${q.explanation}`;
+            }
+
+            feedbackEl.classList.remove('hidden');
+            document.getElementById('next-question-btn').classList.remove('hidden');
+            document.getElementById('quiz-score-text').innerText = `Puntos: ${quizScore}`;
+        }
+
+        function nextQuestion() {
+            quizCurrentIndex++;
+            renderQuestion();
+        }
+
+        function showQuizResults() {
+            document.getElementById('quiz-container').classList.add('hidden');
+            const resultsEl = document.getElementById('quiz-results');
+            resultsEl.classList.remove('hidden');
+
+            document.getElementById('final-score').innerText = `${quizScore} / 10`;
+            const percentage = Math.round((quizScore / 10) * 100);
+            document.getElementById('accuracy-percentage').innerText = `${percentage}% de aciertos`;
+
+            const feedbackMsg = document.getElementById('results-feedback');
+            if (percentage >= 80) {
+                feedbackMsg.innerText = "🌟 ¡Excelente trabajo! Tienes un conocimiento avanzado del voleibol.";
+            } else if (percentage >= 50) {
+                feedbackMsg.innerText = "👍 ¡Buen intento! Repasa las secciones de reglas y técnicas para mejorar.";
+            } else {
+                feedbackMsg.innerText = "📚 Te recomendamos leer la guía de reglas y volver a intentarlo.";
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            showTechnique('saque');
+            initQuiz();
+        });
+    </script>
+</body>
+</html>
